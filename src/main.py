@@ -8,7 +8,7 @@ from config import loadConfig
 from open import isRun
 from luma.core.interface.serial import spi, noop
 from luma.core.render import canvas
-from luma.emulator.device import pygame
+from luma.oled.device import ssd1322
 from luma.core.virtual import viewport, snapshot
 from luma.core.sprite_system import framerate_regulator
 import socket, re, uuid
@@ -66,8 +66,6 @@ def loadData(apiConfig, journeyConfig, config):
         departures = loadDeparturesForStation(apiConfig["apiKey"])
         if departures is None:
             return False, journeyConfig['outOfHoursName']
-        
-        print("Available stations:", list(departures.keys()))
         return departures, None
     except requests.RequestException as err:
         print("Error: Failed to fetch data")
@@ -123,15 +121,14 @@ def drawSignage(device, width, height, data, station_name):
     return virtualViewport
 
 def getVersionNumber():
-    version_file = open('../VERSION', 'r')
+    version_file = open('VERSION', 'r')
     return version_file.read()
 
 try:
     print('Starting Display v' + getVersionNumber())
     config = loadConfig()
-    
-    # Initialize pygame display emulator instead of SPI device
-    device = pygame(width=256, height=64, mode="1", transform="scale2x")
+    serial = noop() if config['headless'] else spi(port=0)
+    device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
 
     font = makeFont("Dot Matrix Regular.ttf", 10)
     fontBold = makeFont("Dot Matrix Bold.ttf", 10)
