@@ -59,7 +59,7 @@ data:
     - departureStation: PAD
     - outOfHoursName: London Paddington
     - refreshTime: 120
-    - apiKey: UPDATE_ME
+    - apiKey: 54d093abc8354a49ba3d9d153259b629
     - operatingHours: 8-22
     - screenBlankHours: 1-6
     - screenRotation: 2
